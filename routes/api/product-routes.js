@@ -1,20 +1,20 @@
 const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
-// The `/api/products` endpoint
 
-// get all products
+
+// GET all products
 router.get('/', (req, res) => {
   Product.findAll({
     attributes: ['id', 'product_name', 'price', 'stock', 'category_id'],
     include: [
         {
             model: Category,
-            attributes: ['id', 'category_name']
+            attributes: ['category_name']
         },
         {
             model: Tag,
-            attributes: ['id', 'tag_name']
+            attributes: ['tag_name']
         }
     ]
 })
@@ -24,17 +24,37 @@ router.get('/', (req, res) => {
         res.status(500).json(err);
     });
 });
-  // find all products
-  // be sure to include its associated Category and Tag data
 
-// get one product
-router.get('/:id', (req, res) => {
-  // find a single product by its `id`
-  // be sure to include its associated Category and Tag data
-});
+
+// GET one product
+router.get('/', (req, res) => {
+    Product.getOne({
+      where: {
+        id: req.params.id
+      },
+      attributes: ['id', 'product_name', 'price', 'stock', 'category_id'],
+      include: [
+          {
+              model: Category,
+              attributes: ['category_name']
+          },
+          {
+              model: Tag,
+              attributes: ['tag_name']
+          }
+      ]
+  })
+      .then(dbProductData => res.json(dbProductData))
+      .catch(err => {
+          console.log(err);
+          res.status(500).json(err);
+      });
+  });
+
 
 // create new product
 router.post('/', (req, res) => {
+  
   /* req.body should look like this...
     {
       product_name: "Basketball",

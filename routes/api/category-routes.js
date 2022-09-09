@@ -1,24 +1,24 @@
 const router = require('express').Router();
 const { Category, Product } = require('../../models');
 
-// The `/api/categories` endpoint
-  router.get("/", (req, res) => {
-    Category.findAll({
-      include: [{
-          model: Product,
-          attributes: ["id", "product_name", "price", "stock", "category_id"],
-        },
-      ],
-    })
-      .then((categoryData) => res.json(categoryData))
-      .catch((err) => {
-        console.log(err);
-        res.status(500).json(err);
-      });
-  });
+// GET ALL from categories
+router.get("/", (req, res) => {
+  Category.findAll({
+    include: [{
+      model: Product,
+      attributes: ["id", "product_name", "price", "stock", "category_id"],
+    },
+    ],
+  })
+    .then((categoryData) => res.json(categoryData))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
 
 // GET a single category  
-router.get('/:id', async (req, res) => {
+router.get('/:id', (req, res) => {
   Category.findOne({
     where: {
       id: req.params.id
@@ -29,8 +29,8 @@ router.get('/:id', async (req, res) => {
     }
   })
     .then(dbCatData => {
-      if(!dbCatData) {
-        res.status(404).json({message: 'The specified category was not found'});
+      if (!dbCatData) {
+        res.status(404).json({ message: 'The specified category was not found' });
         return;
       }
       res.json(dbCatData);
@@ -41,16 +41,56 @@ router.get('/:id', async (req, res) => {
     });
 });
 
+// POST/create a new category
 router.post('/', (req, res) => {
-  // create a new category
+  Category.create({
+    category_name: req.body.category_name
+  })
+    .then(catData => res.json(catData))
+    .catch(err => {
+      res.status(500).json(err);
+    });
 });
 
-router.put('/:id', (req, res) => {
-  // update a category by its `id` value
-});
 
+// DELETE a category by its `id` value
 router.delete('/:id', (req, res) => {
-  // delete a category by its `id` value
+  Category.destroy({
+    where: {
+      id: req.params.id
+    },
+  })
+    .then(dbCatData => {
+      if (!dbCatData) {
+        res.status(404).json({ message: 'The specified category was not found' });
+        return;
+      }
+      res.json(dbCatData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err)
+    });
+});
+
+// PUT/update a category by its `id` value
+router.put('/:id', (req, res) => {
+  Category.update(req.body, {
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(dbCatData => {
+      if (!dbCatData) {
+        res.status(404).json({ message: 'The specified category was not found' });
+        return;
+      }
+      res.json(dbCatData);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
+    });
 });
 
 module.exports = router;
