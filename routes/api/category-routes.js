@@ -4,41 +4,23 @@ const { Category, Product } = require('../../models');
 // GET ALL from categories
 router.get("/", (req, res) => {
   Category.findAll({
-    include: [{
-      model: Product,
-      attributes: ["id", "product_name", "price", "stock", "category_id"],
-    },
-    ],
-  })
-    .then((categoryData) => res.json(categoryData))
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
+    include: [ { model: Product} ]}
+  ).then((tagData) => {
+    res.json(tagData);
+  });
 });
+
 
 // GET a single category  
 router.get('/:id', (req, res) => {
-  Category.findOne({
+  Category.findAll({
     where: {
       id: req.params.id
     },
-    include: {
-      model: Product,
-      attributes: ['id', 'product_name', 'price', 'stock', 'category_id']
-    }
-  })
-    .then(dbCatData => {
-      if (!dbCatData) {
-        res.status(404).json({ message: 'The specified category was not found' });
-        return;
-      }
-      res.json(dbCatData);
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json(err)
-    });
+    include: [ { model: Product} ]}
+  ).then((tagData) => {
+    res.json(tagData);
+  });
 });
 
 // POST/create a new category
