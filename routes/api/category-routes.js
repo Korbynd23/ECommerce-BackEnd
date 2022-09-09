@@ -2,35 +2,25 @@ const router = require('express').Router();
 const { Category, Product } = require('../../models');
 
 // The `/api/categories` endpoint
-
-router.get('/', async (req, res) => {
-    try {
-      const categoryData = await Category.findAll();
-      res.status(200).json(categoryData);
-    } catch (err) {
-      res.status(500).json(err);
-    }
+  router.get("/", (req, res) => {
+    Category.findAll({
+      include: [
+        {
+          model: Product,
+          attributes: ["id", "product_name", "price", "stock", "category_id"],
+        },
+      ],
+    })
+      .then((dbCatData) => res.json(dbCatData))
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   });
-
-  // find all categories
   // be sure to include its associated Products
 
 
 router.get('/:id', async (req, res) => {
-  try {
-    const categoryData = await Category.findByPk(req.params.id, {
-      include: [{ model: Category }],
-    });
-
-    if (!categoryData) {
-      res.status(404).json({ message: 'No category found with that id!' });
-      return;
-    }
-
-    res.status(200).json(categoryData);
-  } catch (err) {
-    res.status(500).json(err);
-  }
   // find one category by its `id` value
   // be sure to include its associated Products
 });
