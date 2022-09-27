@@ -27,6 +27,7 @@ router.get('/:id', (req, res) => {
 
 
 // Create new product
+// (Example req.body at bottom of page)
 router.post('/', (req, res) => {
   Product.create(req.body)
   .then((product) => {
@@ -48,7 +49,8 @@ router.post('/', (req, res) => {
     });
   });
   
-  // update product info by its `id` value
+// update product info by its `id` value
+// (Example req.body at bottom of page)
 router.put('/:id', (req, res) => {
   Product.update(req.body, {
     where: {
@@ -69,12 +71,12 @@ router.put('/:id', (req, res) => {
           };
         });
 
-        const productTagsToRemove = productTags
+        const productTagRemove = productTags
         .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
         .map(({ id }) => id);
 
       return Promise.all([
-        ProductTag.destroy({ where: { id: productTagsToRemove } }),
+        ProductTag.destroy({ where: { id: productTagRemove } }),
         ProductTag.bulkCreate(newProductTags),
       ]);
     })
